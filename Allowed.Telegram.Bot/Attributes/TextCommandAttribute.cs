@@ -2,7 +2,7 @@
 
 namespace Allowed.Telegram.Bot.Attributes;
 
-[AttributeUsage(AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class TextCommandAttribute : Attribute
 {
     private readonly string _text;
