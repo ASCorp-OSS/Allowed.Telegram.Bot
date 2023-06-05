@@ -51,12 +51,11 @@ public class MessageHandler
     protected virtual Task<(MethodInfo, string)> GetMethodByPath(MethodInfo[] methods, Message message)
     {
         var foundMethods = methods.Where(m =>
-            m.GetCommandAttributes().Any(a =>
-            {
+            m.GetCommandAttributes().Any(a => {
                 return a.Type switch
                 {
-                    ComparisonTypes.Strict => message.Text == $"/{a.GetPath()}",
-                    ComparisonTypes.Parameterized => message.Text!.Split(" ").First() == $"/{a.GetPath()}",
+                    ComparisonTypes.Strict => message.Text!.Equals($"/{a.GetPath()}", StringComparison.InvariantCultureIgnoreCase),
+                    ComparisonTypes.Parameterized => message.Text!.Split(" ").First().Equals($"/{a.GetPath()}", StringComparison.InvariantCultureIgnoreCase),
                     _ => false
                 };
             })).ToList();
@@ -78,8 +77,8 @@ public class MessageHandler
             {
                 return a.Type switch
                 {
-                    ComparisonTypes.Strict => message.Text == a.GetText(),
-                    ComparisonTypes.Parameterized => message.Text!.StartsWith(a.GetText()),
+                    ComparisonTypes.Strict => message.Text!.Equals(a.GetText(), StringComparison.InvariantCultureIgnoreCase),
+                    ComparisonTypes.Parameterized => message.Text!.StartsWith(a.GetText(), StringComparison.InvariantCultureIgnoreCase),
                     _ => false
                 };
             })).ToList());
