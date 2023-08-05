@@ -50,4 +50,9 @@ public static class AttributeHelper
     {
         return (PreCheckoutQueryAttribute[])method.GetCustomAttributes<PreCheckoutQueryAttribute>(false);
     }
+    
+    public static IEnumerable<UpdateCommandAttribute> GetUpdateAttributes(this MethodInfo method)
+    {
+        return (UpdateCommandAttribute[])method.GetCustomAttributes<UpdateCommandAttribute>(false);
+    }
 }

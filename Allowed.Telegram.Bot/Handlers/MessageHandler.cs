@@ -47,6 +47,11 @@ public class MessageHandler
     {
         return Task.FromResult(ControllerTypes.SelectMany(c => c.GetMethods()).ToArray());
     }
+    
+    protected virtual Task<MethodInfo[]> GetAllowedMethods()
+    {
+        return Task.FromResult(ControllerTypes.SelectMany(c => c.GetMethods()).ToArray());
+    }
 
     protected virtual Task<(MethodInfo, string)> GetMethodByPath(MethodInfo[] methods, Message message)
     {
@@ -204,6 +209,24 @@ public class MessageHandler
 
         return null;
     }
+    
+    protected async Task<TelegramMethod> GetMethod(MethodType type, Update update)
+    {
+        MethodInfo method = null;
+        var allowedMethods = await GetAllowedMethods();
+
+        if (type == MethodType.Update)
+            method = allowedMethods.SingleOrDefault(m => m.GetUpdateAttributes().Any());
+
+        if (method != null)
+            return new TelegramMethod
+            {
+                ControllerType = ControllerTypes.Single(c => c == method.DeclaringType),
+                Method = method
+            };
+
+        return null;
+    }
 
     private async Task<object> InvokeMethod(MethodType type, Message message)
     {
@@ -333,6 +356,37 @@ public class MessageHandler
         return null;
     }
 
+    private async Task<object> InvokeUpdate(MethodType type, Update update)
+    {
+        var method = await GetMethod(type, update);
+
+        if (method is { ControllerType: { } } && method.Method != null)
+        {
+            var methodParams = method.Method.GetParameters();
+            var parameters = new List<object>();
+
+            if (methodParams.Any(p => p.ParameterType == typeof(UpdateData)))
+                parameters.Add(new UpdateData()
+                {
+                    Client = Client,
+                    Options = Options,
+                    Update = update,
+                    Chat = update.ChatJoinRequest?.Chat ??
+                           update.ChannelPost?.Chat ??
+                           update.EditedChannelPost?.Chat
+                });
+
+            var controller = (CommandController)ActivatorUtilities.CreateInstance(Provider, method.ControllerType);
+
+            // controller.Initialize(update.Message.From.Id);
+            // await controller.InitializeAsync(update.Message.From.Id);
+
+            return await MethodHelper.InvokeMethod(method.Method, parameters, controller);
+        }
+
+        return null;
+    }
+
     protected virtual MethodType GetMethodType(Message message)
     {
         return message.Type switch
@@ -389,6 +443,16 @@ public class MessageHandler
                     messageMiddleware.AfterPreCheckoutProcessed(update.PreCheckoutQuery.From.Id);
                     await messageMiddleware.AfterPreCheckoutProcessedAsync(update.PreCheckoutQuery.From.Id);
                 }
+            }
+            else
+            {
+                result = await InvokeUpdate(MethodType.Update, update);
+            
+                // if (messageMiddleware != null)
+                // {
+                //     await messageMiddleware.AfterMessageProcessedAsync(update.Message.From.Id);
+                //     await messageMiddleware.AfterMessageProcessedAsync(update.Message.From.Id);
+                // }
             }
         }
         catch (Exception ex)
