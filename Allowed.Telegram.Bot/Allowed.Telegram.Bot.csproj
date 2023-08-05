@@ -5,7 +5,7 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <PackageId>WTD.Allowed.Telegram.Bot</PackageId>
-        <Version>4.3.0-preview.8</Version>
+        <Version>4.3.0-preview.9</Version>
         <Company>Allowed Inc.</Company>
         <Authors>VodemSharp</Authors>
         <Product>AllowedSharp</Product>
@@ -13,7 +13,7 @@
         <PackageIcon>icon.png</PackageIcon>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/VodemSharp/Allowed.Telegram.Bot</RepositoryUrl>
-        <PackageVersion>4.3.0-preview.8</PackageVersion>
+        <PackageVersion>4.3.0-preview.9</PackageVersion>
         <PackRelease>true</PackRelease>
     </PropertyGroup>
 
