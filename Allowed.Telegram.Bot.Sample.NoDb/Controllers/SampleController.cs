@@ -64,7 +64,15 @@ public class SampleController : CommandController
     }
 
     [UpdateCommand(UpdateType.ChatJoinRequest)]
-    public async Task UpdateCommandTest(UpdateData data)
+    public async Task UpdateJoinRequestCommandTest(UpdateData data)
+    {
+        await data.Client.SendTextMessageAsync(data.Chat!.Id,$"Update: {data.Update.Type}");
+
+    }
+    
+    [UpdateCommand(UpdateType.ChannelPost)]
+    [UpdateCommand(UpdateType.EditedChannelPost)]
+    public async Task UpdateChannelPostCommandTest(UpdateData data)
     {
         await data.Client.SendTextMessageAsync(data.Chat!.Id,$"Update: {data.Update.Type}");
 

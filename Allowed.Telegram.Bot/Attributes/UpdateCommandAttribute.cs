@@ -12,7 +12,7 @@ public class UpdateCommandAttribute : Attribute
         _type = type;
     }
 
-    public UpdateType GetMessageType()
+    public UpdateType GetUpdateType()
     {
         return _type;
     }

@@ -216,7 +216,7 @@ public class MessageHandler
         var allowedMethods = await GetAllowedMethods();
 
         if (type == MethodType.Update)
-            method = allowedMethods.SingleOrDefault(m => m.GetUpdateAttributes().Any());
+            method = allowedMethods.SingleOrDefault(m => m.GetUpdateAttributes().Any(x => x.GetUpdateType() == update.Type));
 
         if (method != null)
             return new TelegramMethod
