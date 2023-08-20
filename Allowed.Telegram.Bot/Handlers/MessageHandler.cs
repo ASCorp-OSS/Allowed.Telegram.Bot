@@ -403,9 +403,10 @@ public class MessageHandler
         try
         {
             var messageMiddleware = Provider.GetService<MessageMiddleware>();
-            if (update.Message != null)
+            var messageOrEdited = update.Message ?? update.EditedMessage;
+            if (messageOrEdited != null)
             {
-                result = await InvokeMethod(GetMethodType(update.Message), update.Message);
+                result = await InvokeMethod(GetMethodType(messageOrEdited), messageOrEdited);
 
                 if (messageMiddleware != null)
                 {
